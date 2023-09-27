@@ -51,6 +51,34 @@ onUpdated(() => {
 const selectGroup = (key) => {
     historyKey.value = key;
 }
+
+let groupChatName = ref("");
+const createGroup = () => {
+    if (groupChatName.value != '') {
+        push(refDb(database, `all_chat/${groupChatName.value}`), {
+            "user": studentId,
+            "message": '',
+            "dateTime": new Date().toISOString()
+        });
+        groupChatName.value = '';
+    }
+}
+const deleteGroup = (key) => {
+    // ตรวจสอบว่า key ไม่เป็นค่าว่าง
+    if (key !== '') {
+        // ลบกลุ่มที่ถูกเลือกออกจาก Firebase Realtime Database
+        const groupRef = refDb(database, `all_chat/${key}`);
+        set(groupRef, null); // ลบข้อมูลทั้งกลุ่ม
+
+        // ลบกลุ่มที่ถูกเลือกออกจาก `histories`
+        histories.value = histories.value.filter((group, index) => index !== key);
+
+        // เลือกกลุ่มใหม่หลังการลบ
+        if (historykey.value === key) {
+            historykey.value = '';
+        }
+    }
+};
 // onMounted(() => {
 //     push(refDb(database,'test'), {
 //     "6314110001": "Hello World"
@@ -71,16 +99,24 @@ const selectGroup = (key) => {
                         <h2 class="card-title">{{ index }}</h2>
                         <p class="text-sm text-gray-500 px-4 py-2">พิมพ์ว่า: {{
                             group[Object.keys(group)[Object.keys(group).length - 1]].message }}</p>
+                        <button class="btn btn-primary" @click="deleteGroup(index)">delete Group</button>
                     </div>
                 </div>
             </div>
             <div class="w-full h[10%] pt-4">
-                <button class="btn w-full h-full" data-theme="cupcake" onclick="my_model_1.showModel()">Add Group</button>
+                <button class="btn w-full h-full" data-theme="cupcake" onclick="my_modal_1.showModal()">Add Group</button>
                 <dialog id="my_modal_1" class="modal">
                     <div class="modal-box">
-                        <h3 class="font-bold text-lg">Hello!</h3>
+                        <div class="form-control w-full">
+                            <label class="label">
+                                <span class="label-text">Group Name</span>
+                            </label>
+                            <input type="text" placeholder="Type here" class="input input-bordered w-full"
+                                v-model="groupChatName" />
+                        </div>
                         <p class="py-4">Press ESC key or click the button below to close</p>
                         <div class="modal-action">
+                            <button class="btn btn-primary" @click="createGroup">create</button>
                             <form method="dialog">
                                 <!-- if there is a button in form, it will close the modal -->
                                 <button class="btn">Close</button>
