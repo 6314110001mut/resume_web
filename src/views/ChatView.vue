@@ -63,12 +63,33 @@ const selectGroup = (key) => {
 <template>
     <div class="flex">
         <div class="overflow-scroll bg-black h-[90vh] w-[30%]">
-            <div class="w-full bg-[#ffffff] h-26 border-b-4" style="cursor: pointer;" v-for="(group,index) in histories" :key="index" data-theme="cupcake" @click="selectGroup(index)">
-                <div class="card-body">
-                    <h2 class="card-title">{{ index }}</h2>
-                    <p class="text-sm text-gray-500 px-4 py-2">พิมพ์ว่า: {{ group[Object.keys(group)[Object.keys(group).length - 1]].message  }}</p>
+            <div class="overflow-y-scroll w-full h-[90%]">
+
+                <div class="w-full bg-[#ffffff] h-26 border-b-4" style="cursor: pointer;"
+                    v-for="(group, index) in histories" :key="index" data-theme="cupcake" @click="selectGroup(index)">
+                    <div class="card-body">
+                        <h2 class="card-title">{{ index }}</h2>
+                        <p class="text-sm text-gray-500 px-4 py-2">พิมพ์ว่า: {{
+                            group[Object.keys(group)[Object.keys(group).length - 1]].message }}</p>
+                    </div>
                 </div>
             </div>
+            <div class="w-full h[10%] pt-4">
+                <button class="btn w-full h-full" data-theme="cupcake" onclick="my_model_1.showModel()">Add Group</button>
+                <dialog id="my_modal_1" class="modal">
+                    <div class="modal-box">
+                        <h3 class="font-bold text-lg">Hello!</h3>
+                        <p class="py-4">Press ESC key or click the button below to close</p>
+                        <div class="modal-action">
+                            <form method="dialog">
+                                <!-- if there is a button in form, it will close the modal -->
+                                <button class="btn">Close</button>
+                            </form>
+                        </div>
+                    </div>
+                </dialog>
+            </div>
+
         </div>
 
         <div class="bg-gray h-[90vh] w-[70%]">
