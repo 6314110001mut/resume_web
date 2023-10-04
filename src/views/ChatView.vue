@@ -8,7 +8,9 @@ import {
     ref as refDb,
     set,
     push,
-    onValue
+    onValue,
+    child,
+    get
 } from '../firebaseConfig'
 let chat = ref("");
 let histories = ref([]);
@@ -39,7 +41,7 @@ const onSend = () => {
 // }
 
 onValue(db, (snapshot) => {
-    const data = snapshot.val();
+    const data = snapshot.val() ?? [];
     histories.value = data;
 })
 // watch(histories, (newHistories, oldHistories) => {
@@ -55,28 +57,26 @@ const selectGroup = (key) => {
 let groupChatName = ref("");
 const createGroup = () => {
     if (groupChatName.value != '') {
-        push(refDb(database, `all_chat/${groupChatName.value}`), {
-            "user": studentId,
-            "message": '',
-            "dateTime": new Date().toISOString()
-        });
-        groupChatName.value = '';
+        get(child(db, `${groupChatName.value}`)).then((snapshot) => {
+            if(snapshot.exists()){
+                alert("Cannot create chat because chat is exits.")
+            }else{
+                push(refDb(database, `all_chat/${groupChatName.value}`), {
+                "user": studentId,
+                "message": '',
+                "dateTime": new Date().toISOString()
+                });
+                groupChatName.value = '';
+            }
+        }).catch((err) => {
+            console.error(err);
+        })
     }
 }
 const deleteGroup = (key) => {
-    // ตรวจสอบว่า key ไม่เป็นค่าว่าง
     if (key !== '') {
-        // ลบกลุ่มที่ถูกเลือกออกจาก Firebase Realtime Database
         const groupRef = refDb(database, `all_chat/${key}`);
-        set(groupRef, null); // ลบข้อมูลทั้งกลุ่ม
-
-        // ลบกลุ่มที่ถูกเลือกออกจาก `histories`
-        histories.value = histories.value.filter((group, index) => index !== key);
-
-        // เลือกกลุ่มใหม่หลังการลบ
-        if (historykey.value === key) {
-            historykey.value = '';
-        }
+        set(groupRef, null); 
     }
 };
 // onMounted(() => {
@@ -98,7 +98,7 @@ const deleteGroup = (key) => {
                     <div class="card-body">
                         <h2 class="card-title">{{ index }}</h2>
                         <p class="text-sm text-gray-500 px-4 py-2">พิมพ์ว่า: {{
-                            group[Object.keys(group)[Object.keys(group).length - 1]].message }}</p>
+                            group[Object.keys(group)[Object.keys(group).length - 1]]?.message }}</p>
                         <button class="btn btn-primary" @click="deleteGroup(index)">delete Group</button>
                     </div>
                 </div>

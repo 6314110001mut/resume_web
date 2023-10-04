@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAuth } from 'firebase/auth';
-import { getDatabase, ref, set, push, onValue } from 'firebase/database'
+import { getDatabase, ref, set, push, onValue, child, get } from 'firebase/database'
 
 
 
@@ -37,4 +37,4 @@ const database = getDatabase(app)
 
 
 
-export { app, auth, database, ref, set, push, onValue }
+export { app, auth, database, ref, set, push, onValue, child, get }
